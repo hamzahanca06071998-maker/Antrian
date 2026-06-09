@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Antrian Digital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:25px;
+    padding:30px;
+    color:white;
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+    font-size:2rem;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:rgba(255,255,255,0.12);
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.card h2{
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.number{
+    font-size:60px;
+    font-weight:700;
+    color:#facc15;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+    padding:14px 20px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-add{
+    background:#22c55e;
+    color:white;
+}
+
+.btn-add:hover{
+    background:#16a34a;
+}
+
+.btn-next{
+    background:#3b82f6;
+    color:white;
+}
+
+.btn-next:hover{
+    background:#2563eb;
+}
+
+.action{
+    margin-top:25px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.queue-list{
+    margin-top:25px;
+    background:rgba(255,255,255,0.12);
+    padding:20px;
+    border-radius:20px;
+}
+
+.queue-list h3{
+    margin-bottom:15px;
+}
+
+ul{
+    list-style:none;
+    max-height:250px;
+    overflow:auto;
+}
+
+li{
+    background:rgba(255,255,255,0.08);
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    opacity:0.8;
+}
+
+@media(max-width:600px){
+    .number{
+        font-size:45px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🎫 Sistem Antrian Digital</h1>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h2>Nomor Sedang Dilayani</h2>
+            <div class="number" id="current">0</div>
+        </div>
+
+        <div class="card">
+            <h2>Total Menunggu</h2>
+            <div class="number" id="waiting">0</div>
+        </div>
+
+    </div>
+
+    <div class="action">
+        <button class="btn-add" onclick="ambilAntrian()">
+            ➕ Ambil Nomor Antrian
+        </button>
+
+        <button class="btn-next" onclick="panggilBerikutnya()">
+            📢 Panggil Berikutnya
+        </button>
+    </div>
+
+    <div class="queue-list">
+        <h3>Daftar Antrian</h3>
+        <ul id="queueList"></ul>
+    </div>
+
+    <div class="footer">
+        Sistem Antrian Modern © 2026
+    </div>
+
+</div>
+
+<script>
+let nomorTerakhir = 0;
+let antrian = [];
+let sedangDilayani = 0;
+
+function ambilAntrian() {
+    nomorTerakhir++;
+    antrian.push(nomorTerakhir);
+
+    updateTampilan();
+
+    alert("Nomor Antrian Anda: A-" +
+          String(nomorTerakhir).padStart(3,'0'));
+}
+
+function panggilBerikutnya() {
+
+    if(antrian.length === 0){
+        alert("Tidak ada antrian.");
+        return;
+    }
+
+    sedangDilayani = antrian.shift();
+
+    document.getElementById("current").innerText =
+        String(sedangDilayani).padStart(3,'0');
+
+    updateTampilan();
+
+    // Suara pemanggilan
+    let text = "Nomor antrian " + sedangDilayani + " silakan menuju loket";
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "id-ID";
+    speechSynthesis.speak(speech);
+}
+
+function updateTampilan(){
+
+    document.getElementById("waiting").innerText =
+        antrian.length;
+
+    let list = document.getElementById("queueList");
+    list.innerHTML = "";
+
+    antrian.forEach(item => {
+        let li = document.createElement("li");
+        li.innerHTML =
+            "🎟️ Antrian A-" +
+            String(item).padStart(3,'0');
+        list.appendChild(li);
+    });
+}
+</script>
+
+</body>
+</html>
